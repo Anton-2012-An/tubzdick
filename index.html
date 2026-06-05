@@ -9,13 +9,12 @@
         body { background: #1e1f2c; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
         .app-container { max-width: 1400px; width: 100%; background: #f5f7fc; border-radius: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; padding: 20px 24px 32px; }
         .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: white; max-width: 550px; width: 90%; border-radius: 28px; padding: 24px; max-height: 85vh; overflow-y: auto; }
+        .modal-card { background: white; max-width: 600px; width: 90%; border-radius: 28px; padding: 24px; max-height: 85vh; overflow-y: auto; }
         button { background: #2c3e66; color: white; border: none; padding: 10px 20px; border-radius: 40px; font-weight: bold; cursor: pointer; margin: 8px 6px; transition: 0.2s; }
         button.danger { background: #b13e3e; }
         button.warning { background: #e67e22; }
         button.success { background: #27ae60; }
         button.small { padding: 5px 12px; font-size: 12px; }
-        button:disabled { background: #999; cursor: not-allowed; }
         input, textarea, select { width: 100%; padding: 10px; margin: 6px 0; border-radius: 20px; border: 1px solid #bbb; }
         .queue-card { background: white; border-radius: 24px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 12px; border-left: 6px solid #2c3e66; }
         .stars { font-size: 22px; cursor: pointer; display: inline-block; }
@@ -25,10 +24,17 @@
         .flex-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
         .checklist { background: #e8f0fe; padding: 15px; border-radius: 20px; margin: 10px 0; }
         .checklist label { display: block; margin: 8px 0; }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-badge { display: inline-block; padding: 6px 16px; border-radius: 40px; font-size: 14px; font-weight: bold; }
         .status-waiting { background: #f39c12; color: white; }
         .status-session { background: #27ae60; color: white; }
         .status-none { background: #95a5a6; color: white; }
+        .rules-list { text-align: left; margin: 16px 0; padding-left: 0; list-style: none; }
+        .rules-list li { margin-bottom: 12px; line-height: 1.4; font-size: 15px; }
+        .user-header { background: #2c3e66; color: white; padding: 12px 20px; border-radius: 60px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .user-id-badge { background: #ffb400; color: #1e1f2c; padding: 5px 15px; border-radius: 40px; font-weight: bold; font-size: 18px; font-family: monospace; }
+        .user-rating { background: gold; color: #1e1f2c; padding: 5px 15px; border-radius: 40px; font-weight: bold; }
+        .user-name-large { font-size: 18px; font-weight: bold; }
+        .info-grid { display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
     </style>
 </head>
 <body>
@@ -117,7 +123,7 @@
         if(!user) { currentUserId = null; renderAuthScreen(); return; }
         if(user.bannedUntil && user.bannedUntil > Date.now()) {
             const banDate = new Date(user.bannedUntil).toLocaleString();
-            appRoot.innerHTML = `<div class="modal"><div class="modal-card"><h2>⛔ Доступ заблокирован</h2><p>до ${banDate}</p><button onclick="logout()">Выйти</button></div></div>`;
+            appRoot.innerHTML = `<div class="modal"><div class="modal-card"><h2>⛔ ДОСТУП ЗАБЛОКИРОВАН</h2><p>Аккаунт заморожен до ${banDate}</p><button onclick="logout()">Выйти</button></div></div>`;
             return;
         }
         if(waitingForExitChecklist) {
@@ -140,38 +146,38 @@
     }
     window.logout = logout;
 
+    // ========== НОВОЕ ЖЁСТКОЕ СОГЛАШЕНИЕ (без 14 лет и без воды) ==========
     function renderAuthScreen() {
         appRoot.innerHTML = `
             <div id="rulesModal" class="modal">
                 <div class="modal-card">
-                    <h2>🚽 ДОГОВОР ПОЛЬЗОВАНИЯ ТУАЛЕТОМ</h2>
-                    <div class="rules-list">
-                        <p>1. я достиг 14 лет.</p><p>2. если оставлю чиркаши, то буду убирать САМ.</p>
-                        <p>3. я обязуюсь соблюдать порядок в туалете после себя.</p>
-                        <p>4. аккаунт может быть заблокирован при нарушениях.</p>
-                        <p>5. я обязуюсь СОБЛЮДАТЬ очередь и не задерживать других.</p>
-                        <p>6. при входе нажимаю "начать сеанс", при выходе ставлю все галочки.</p>
-                        <p>7. я САМ СО СВОЕГО АККАУНТА и не передаю третьим лицам.</p>
-                        <p>8. следующий посетитель не будет страдать без бумаги.</p>
-                        <p>9. я обязуюсь ставить галочки правдиво.</p>
-                        <p>10. я прочитал(а) и согласен(согласна) со всеми условиями.</p>
-                    </div>
-                    <label><input type="checkbox" id="agreeCheckbox"> ✔️ Я принимаю пункт 10 (обязательно)</label><br><br>
-                    <button id="acceptRulesBtn">ПОДТВЕРЖДАЮ</button>
+                    <h2>📜 ПРАВИЛА ПОЛЬЗОВАНИЯ ТУАЛЕТОМ</h2>
+                    <ul class="rules-list">
+                        <li><strong>1.</strong> За собой — убрать. Чиркаши, лужи, бардак — ликвидируешь сам.</li>
+                        <li><strong>2.</strong> За нарушение порядка — блокировка аккаунта без предупреждения.</li>
+                        <li><strong>3.</strong> Не задерживайся. Очередь не ждёт.</li>
+                        <li><strong>4.</strong> Зашёл — сразу жми «Начать сеанс». Вышел — ОБЯЗАТЕЛЬНО поставь ВСЕ галочки: убрал, смыл, порядок, бумага есть.</li>
+                        <li><strong>5.</strong> Аккаунт — твой. Никому не передавай.</li>
+                        <li><strong>6.</strong> Не оставляй следующих без бумаги. Это свинство.</li>
+                        <li><strong>7.</strong> Галочки после выхода — только честно. Без вранья.</li>
+                        <li><strong>8.</strong> Правила прочитал. Согласен. Нарушил — отвечаешь.</li>
+                    </ul>
+                    <label style="display: block; margin: 15px 0; font-weight: bold;"><input type="checkbox" id="agreeCheckbox"> ✔️ Я ПРИНИМАЮ ВСЕ ПРАВИЛА (обязательно)</label>
+                    <button id="acceptRulesBtn" style="width: 100%;">ПОДТВЕРЖДАЮ</button>
                 </div>
             </div>
             <div id="regForm" style="display:none;" class="modal">
                 <div class="modal-card">
-                    <h2>📝 Регистрация / Вход</h2>
-                    <input type="text" id="regName" placeholder="Имя"><br>
-                    <input type="text" id="regSurname" placeholder="Фамилия"><br>
-                    <input type="text" id="regPatronymic" placeholder="Отчество"><br>
-                    <button id="doRegBtn">Войти</button>
+                    <h2>📝 ВХОД / РЕГИСТРАЦИЯ</h2>
+                    <input type="text" id="regName" placeholder="Имя" style="font-size: 16px;"><br>
+                    <input type="text" id="regSurname" placeholder="Фамилия" style="font-size: 16px;"><br>
+                    <input type="text" id="regPatronymic" placeholder="Отчество" style="font-size: 16px;"><br>
+                    <button id="doRegBtn" style="width: 100%;">ВОЙТИ</button>
                 </div>
             </div>
         `;
         document.getElementById('acceptRulesBtn').onclick = () => {
-            if(!document.getElementById('agreeCheckbox').checked) { alert('Галочка обязательна'); return; }
+            if(!document.getElementById('agreeCheckbox').checked) { alert('❌ Надо принять правила — поставь галочку'); return; }
             document.getElementById('rulesModal').style.display = 'none';
             document.getElementById('regForm').style.display = 'flex';
         };
@@ -210,31 +216,33 @@
         
         let statusText = '';
         let statusClass = '';
-        if(inSession) { statusText = 'В ТУАЛЕТЕ'; statusClass = 'status-session'; }
+        if(inSession) { statusText = '🔞 СЕЙЧАС В ТУАЛЕТЕ'; statusClass = 'status-session'; }
         else if(inQueue) { 
             let pos = queue.findIndex(q => q.userId === currentUserId) + 1;
-            statusText = `В ОЧЕРЕДИ (${pos}/${queue.length})`; 
+            statusText = `⏳ В ОЧЕРЕДИ (${pos}/${queue.length})`; 
             statusClass = 'status-waiting';
         }
-        else { statusText = 'НЕ В ОЧЕРЕДИ'; statusClass = 'status-none'; }
+        else { statusText = '💤 НЕ В ОЧЕРЕДИ'; statusClass = 'status-none'; }
         
-        let adminBtn = (currentUserId === 111111) ? `<button id="adminPanelBtn">👑 Админ панель</button>` : '';
+        let adminBtn = (currentUserId === 111111) ? `<button id="adminPanelBtn" style="background:#b13e3e;">👑 АДМИН ПАНЕЛЬ</button>` : '';
         
         appRoot.innerHTML = `
-            <div style="display:flex; justify-content:space-between; flex-wrap:wrap; align-items:center;">
-                <h2>🚻 Туалетная очередь</h2>
-                <div>👤 ${user.name} ${user.surname} | ⭐ ${user.rating} | ID: ${user.id}</div>
+            <div class="user-header">
+                <div class="info-grid">
+                    <span class="user-name-large">🧻 ${user.name} ${user.surname}</span>
+                    <span class="user-id-badge">🆔 ID: ${user.id}</span>
+                    <span class="user-rating">⭐ РЕЙТИНГ: ${user.rating}</span>
+                </div>
+                <div class="status-badge ${statusClass}" style="font-size: 16px;">${statusText}</div>
             </div>
-            <div style="margin: 10px 0;">
-                <span class="status-badge ${statusClass}">${statusText}</span>
-            </div>
-            <div class="flex-row">
-                <button id="viewQueueBtn">📋 Посмотреть очередь (${queue.length})</button>
-                ${canJoin ? '<button id="joinQueueBtn">🚶 Встать в очередь</button>' : ''}
-                ${canLeaveQueue ? '<button id="leaveQueueBtn" class="danger">❌ Выйти из очереди</button>' : ''}
-                ${canStart ? '<button id="startSessionBtn" class="success">🚽 Начать посещение</button>' : ''}
-                <button id="reportErrorBtn">⚠️ Сообщить об ошибке/жалоба</button>
-                <button id="profileBtn">👤 Мой профиль</button>
+            
+            <div class="flex-row" style="justify-content: center; margin-bottom: 20px;">
+                <button id="viewQueueBtn">📋 ПОСМОТРЕТЬ ОЧЕРЕДЬ (${queue.length})</button>
+                ${canJoin ? '<button id="joinQueueBtn" class="success">🚶 ВСТАТЬ В ОЧЕРЕДЬ</button>' : ''}
+                ${canLeaveQueue ? '<button id="leaveQueueBtn" class="danger">❌ ВЫЙТИ ИЗ ОЧЕРЕДИ</button>' : ''}
+                ${canStart ? '<button id="startSessionBtn" class="success" style="background:#27ae60;">🚽 НАЧАТЬ ПОСЕЩЕНИЕ</button>' : ''}
+                <button id="reportErrorBtn" class="warning">⚠️ ЖАЛОБА / ОШИБКА</button>
+                <button id="profileBtn">👤 МОЙ ПРОФИЛЬ</button>
                 ${adminBtn}
             </div>
             <div id="dynamicArea" style="margin-top:20px;"></div>
@@ -251,12 +259,12 @@
         if(currentSession && currentSession.userId !== currentUserId) {
             let currentVisitor = findUserById(currentSession.userId);
             if(currentVisitor) {
-                document.getElementById('dynamicArea').innerHTML = `<div class="queue-card">🚽 Сейчас в туалете: ${currentVisitor.name} ${currentVisitor.surname}<br>⏱️ Начал сеанс: ${new Date(currentSession.startTime).toLocaleTimeString()}</div>`;
+                document.getElementById('dynamicArea').innerHTML = `<div class="queue-card"><h3>🚽 СЕЙЧАС В ТУАЛЕТЕ</h3><p><b>${currentVisitor.name} ${currentVisitor.surname}</b> | ID: ${currentVisitor.id}<br>⏱️ Начало: ${new Date(currentSession.startTime).toLocaleTimeString()}</p></div>`;
             }
         } else if(!currentSession && queue.length > 0 && queue[0].userId !== currentUserId) {
             let nextVisitor = findUserById(queue[0].userId);
             if(nextVisitor) {
-                document.getElementById('dynamicArea').innerHTML = `<div class="queue-card">⏰ Следующий в очереди: ${nextVisitor.name} ${nextVisitor.surname}</div>`;
+                document.getElementById('dynamicArea').innerHTML = `<div class="queue-card"><h3>⏰ СЛЕДУЮЩИЙ В ОЧЕРЕДИ</h3><p><b>${nextVisitor.name} ${nextVisitor.surname}</b> | ID: ${nextVisitor.id} | ⭐ ${nextVisitor.rating}</p></div>`;
             }
         } else if(currentSession && currentSession.userId === currentUserId) {
             document.getElementById('dynamicArea').innerHTML = renderActiveSession();
@@ -265,76 +273,60 @@
 
     function showQueueList() {
         if(queue.length === 0) { alert('Очередь пуста'); return; }
-        let html = `<h3>🧾 ОЧЕРЕДЬ (${queue.length})</h3>`;
+        let html = `<h2>🧾 ОЧЕРЕДЬ (${queue.length})</h2>`;
         queue.forEach((entry, idx) => {
             let u = findUserById(entry.userId);
             if(!u) return;
             html += `<div class="queue-card">
-                <b>${idx+1}. ${u.name} ${u.surname}</b> ⭐${u.rating}<br>
-                📝 Зачем: ${entry.reason}<br>⏱️ На ${entry.minutes} мин<br>💬 ${entry.comment || '—'}<br>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <b style="font-size:18px;">${idx+1}. ${u.name} ${u.surname}</b>
+                    <span style="background:gold; padding:3px 12px; border-radius:20px;">⭐ ${u.rating}</span>
+                    <span style="background:#2c3e66; color:white; padding:3px 12px; border-radius:20px;">🆔 ${u.id}</span>
+                </div>
+                <p>📝 Зачем: ${entry.reason}<br>⏱️ На ${entry.minutes} мин<br>💬 ${entry.comment || '—'}</p>
                 <div class="flex-row" style="margin-top:8px;">
-                    <button class="small" onclick="showUserDetails(${entry.userId})">Подробнее</button>
-                    <button class="small success" onclick="writeReview(${entry.userId})">✍️ Написать отзыв</button>
-                    ${entry.userId === currentUserId ? '<button class="small warning" onclick="leaveQueue()">Выйти из очереди</button>' : `<button class="small warning" onclick="yieldPlaceTo(${entry.userId})">Уступить место</button>`}
+                    <button class="small" onclick="showUserDetails(${entry.userId})">ПОДРОБНЕЕ</button>
+                    <button class="small success" onclick="writeReview(${entry.userId})">✍️ НАПИСАТЬ ОТЗЫВ</button>
+                    ${entry.userId === currentUserId ? '<button class="small warning" onclick="leaveQueue()">ВЫЙТИ</button>' : `<button class="small warning" onclick="yieldPlaceTo(${entry.userId})">УСТУПИТЬ МЕСТО</button>`}
                 </div>
             </div>`;
         });
         document.getElementById('dynamicArea').innerHTML = html;
     }
 
-    // Новая функция: написать отзыв на любого пользователя
     window.writeReview = (targetId) => {
-        if(targetId === currentUserId) {
-            alert('Нельзя написать отзыв на самого себя');
-            return;
-        }
+        if(targetId === currentUserId) { alert('Нельзя писать отзыв на себя'); return; }
         let targetUser = findUserById(targetId);
         if(!targetUser) return;
-        
         let modal = document.createElement('div'); modal.className = 'modal';
         let starsHtml = '';
-        for(let i=1; i<=5; i++) {
-            starsHtml += `<span class="stars" data-value="${i}">☆</span>`;
-        }
-        modal.innerHTML = `<div class="modal-card">
-            <h3>⭐ Написать отзыв</h3>
-            <p><b>Пользователь:</b> ${targetUser.name} ${targetUser.surname} (ID: ${targetUser.id})</p>
-            <p><b>Оценка:</b></p>
+        for(let i=1; i<=5; i++) starsHtml += `<span class="stars" data-value="${i}">☆</span>`;
+        modal.innerHTML = `<div class="modal-card"><h3>⭐ НАПИСАТЬ ОТЗЫВ</h3>
+            <p><b>${targetUser.name} ${targetUser.surname}</b> | ID: ${targetUser.id}</p>
             <div id="reviewStars">${starsHtml}</div>
-            <textarea id="reviewComment" rows="3" placeholder="Ваш комментарий (необязательно)"></textarea><br>
-            <button id="submitReview" class="success">Отправить отзыв</button>
-            <button id="cancelReview" class="warning">Отмена</button>
+            <textarea id="reviewComment" rows="3" placeholder="Комментарий (необязательно)"></textarea>
+            <button id="submitReview" class="success">ОТПРАВИТЬ</button>
+            <button id="cancelReview">ОТМЕНА</button>
         </div>`;
         document.body.appendChild(modal);
-        
         let selectedStars = 0;
         let starsElements = document.querySelectorAll('#reviewStars .stars');
         function highlightStars(val) {
-            starsElements.forEach((s, idx) => { 
-                s.innerHTML = idx < val ? '★' : '☆'; 
-                s.style.color = idx < val ? '#ffb400' : '#ddd';
-            });
+            starsElements.forEach((s, idx) => { s.innerHTML = idx < val ? '★' : '☆'; s.style.color = idx < val ? '#ffb400' : '#ddd'; });
         }
         starsElements.forEach(star => {
             star.onmouseover = function() { highlightStars(parseInt(this.dataset.value)); };
             star.onclick = function() { selectedStars = parseInt(this.dataset.value); highlightStars(selectedStars); };
         });
-        
         document.getElementById('submitReview').onclick = () => {
-            if(selectedStars === 0) { alert('Поставьте оценку!'); return; }
+            if(selectedStars === 0) { alert('Поставьте оценку'); return; }
             let comment = document.getElementById('reviewComment').value;
-            allFeedbacks.push({
-                fromUserId: currentUserId,
-                targetUserId: targetId,
-                stars: selectedStars,
-                comment: comment,
-                createdAt: Date.now()
-            });
+            allFeedbacks.push({ fromUserId: currentUserId, targetUserId: targetId, stars: selectedStars, comment: comment, createdAt: Date.now() });
             updateRating(targetId);
-            if(comment) addCommentToUser(targetId, currentUserId, `[ОТЗЫВ] Оценка ${selectedStars}⭐: ${comment}`);
+            if(comment) addCommentToUser(targetId, currentUserId, `[ОТЗЫВ] ${selectedStars}⭐: ${comment}`);
             else addCommentToUser(targetId, currentUserId, `[ОЦЕНКА] ${selectedStars}⭐`);
             saveData();
-            alert(`✅ Отзыв добавлен! Рейтинг пользователя обновлён.`);
+            alert('✅ Отзыв добавлен');
             modal.remove();
             render();
         };
@@ -347,54 +339,50 @@
         let comments = u.commentsReceived.slice(0, 5).map(c => `<li><b>${c.from}:</b> ${c.text}</li>`).join('');
         let fbToUser = allFeedbacks.filter(f => f.targetUserId === uid);
         let avgStars = fbToUser.length ? (fbToUser.reduce((s,f)=>s+f.stars,0)/fbToUser.length).toFixed(1) : 'нет';
-        alert(`👤 ${u.name} ${u.surname}\n⭐ Рейтинг: ${u.rating} (${fbToUser.length} оценок)\n📝 Последние отзывы/комментарии:\n${comments || 'нет'}`);
+        alert(`👤 ${u.name} ${u.surname}\n🆔 ID: ${u.id}\n⭐ Рейтинг: ${u.rating} (${fbToUser.length} оценок, средняя ${avgStars})\n📝 Отзывы:\n${comments || 'нет'}`);
     };
 
     window.leaveQueue = () => {
-        if(confirm('Вы уверены, что хотите выйти из очереди?')) {
+        if(confirm('Выйти из очереди?')) {
             queue = queue.filter(q => q.userId !== currentUserId);
             saveData();
-            addToHistory(currentUserId, 'вышел(ла) из очереди', '');
+            addToHistory(currentUserId, 'вышел из очереди', '');
             render();
         }
     };
 
     window.yieldPlaceTo = (targetId) => {
-        let comment = prompt('Напишите комментарий (почему уступаете место):');
-        if(comment === null) return;
+        let comment = prompt('Причина уступки места:');
+        if(!comment) return;
         let targetUser = findUserById(targetId);
         if(!targetUser) return;
-        
-        addCommentToUser(targetId, currentUserId, `[Уступил(а) место] ${comment}`);
+        addCommentToUser(targetId, currentUserId, `[УСТУПИЛ МЕСТО] ${comment}`);
         queue = queue.filter(q => q.userId !== currentUserId);
         saveData();
-        addCommentToUser(targetId, 111111, `🔔 Вам уступили место в очереди! Комментарий: ${comment}`, true);
-        addToHistory(currentUserId, 'уступил(а) место', `пользователю ${targetUser.name} ${targetUser.surname}`);
-        
-        alert(`✅ Вы уступили место пользователю ${targetUser.name} ${targetUser.surname}`);
+        addCommentToUser(targetId, 111111, `🔔 Вам уступили место! Причина: ${comment}`, true);
+        alert(`✅ Вы уступили место ${targetUser.name}`);
         render();
     };
 
     function showJoinForm() {
         let modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-card"><h3>🚶 Встать в очередь</h3>
-        <input id="joinReason" placeholder="Зачем Вам в туалет?" required><br>
-        <input id="joinMinutes" type="number" placeholder="На сколько минут (цифры)" required><br>
+        modal.innerHTML = `<div class="modal-card"><h3>🚶 ВСТАТЬ В ОЧЕРЕДЬ</h3>
+        <input id="joinReason" placeholder="Зачем в туалет?" required><br>
+        <input id="joinMinutes" type="number" placeholder="На сколько минут?" required><br>
         <textarea id="joinComment" placeholder="Комментарий (необязательно)"></textarea><br>
-        <button id="confirmJoin">Встать в очередь</button> <button id="cancelJoin">Отмена</button></div>`;
+        <button id="confirmJoin" class="success">ВСТАТЬ</button> <button id="cancelJoin">ОТМЕНА</button></div>`;
         document.body.appendChild(modal);
         document.getElementById('confirmJoin').onclick = () => {
             let reason = document.getElementById('joinReason').value.trim();
             let minutes = parseInt(document.getElementById('joinMinutes').value);
             let comment = document.getElementById('joinComment').value;
-            if(!reason || isNaN(minutes) || minutes<=0) { alert('Заполните "зачем" и минуты'); return; }
+            if(!reason || isNaN(minutes) || minutes<=0) { alert('Заполните всё'); return; }
             if(queue.some(q => q.userId === currentUserId)) { alert('Вы уже в очереди'); modal.remove(); return; }
-            if(currentSession) { alert('Сейчас кто-то в туалете, дождитесь'); modal.remove(); return; }
-            
+            if(currentSession) { alert('Сейчас кто-то в туалете'); modal.remove(); return; }
             queue.push({ userId: currentUserId, reason, minutes, comment, timestamp: Date.now() });
             saveData();
-            addToHistory(currentUserId, 'встал(а) в очередь', `причина: ${reason}, на ${minutes} мин`);
-            alert('✅ Вы в очереди!');
+            addToHistory(currentUserId, 'встал в очередь', `${reason}, ${minutes} мин`);
+            alert('✅ Вы в очереди');
             modal.remove();
             render();
         };
@@ -402,22 +390,12 @@
     }
 
     function startSession() {
-        if(currentSession) {
-            alert('Сейчас уже кто-то в туалете');
-            return;
-        }
-        
+        if(currentSession) { alert('Кто-то уже в туалете'); return; }
         let inQueue = queue.some(q => q.userId === currentUserId);
         let isFirst = (queue.length > 0 && queue[0].userId === currentUserId);
-        
-        if(queue.length === 0) {
-            if(!confirm('Очередь пуста. Хотите начать посещение?')) return;
-        } else if(isFirst && inQueue) {
-            if(!confirm('Ваша очередь! Хотите начать посещение?')) return;
-        } else {
-            alert('❌ Вы не можете начать посещение! Нужно встать в очередь и дождаться своей очереди.');
-            return;
-        }
+        if(queue.length === 0) { if(!confirm('Очередь пуста. Начать?')) return; }
+        else if(isFirst && inQueue) { if(!confirm('Ваша очередь! Начать посещение?')) return; }
+        else { alert('❌ Нельзя начать. Нужно встать в очередь и дождаться.'); return; }
         
         queue = queue.filter(q => q.userId !== currentUserId);
         saveData();
@@ -425,10 +403,7 @@
         let lastVisitorId = null;
         for(let u of users) {
             for(let h of u.history) {
-                if(h.action === 'завершил(а) посещение' && u.id !== currentUserId) {
-                    lastVisitorId = u.id;
-                    break;
-                }
+                if(h.action === 'завершил посещение' && u.id !== currentUserId) { lastVisitorId = u.id; break; }
             }
         }
         pendingPreviousUserId = lastVisitorId;
@@ -442,189 +417,108 @@
                 let elapsed = Math.floor((Date.now() - currentSession.startTime) / 1000);
                 if(elapsed > 180 && !currentSession.hasWarned) {
                     currentSession.hasWarned = true;
-                    let reason = prompt('⚠️ Выходите, Вы уже долго сидите!!! Напишите причину задержки:');
-                    if(reason && reason.trim()) {
-                        for(let entry of queue) {
-                            addCommentToUser(entry.userId, currentUserId, `🚨 ЗАДЕРЖКА В ТУАЛЕТЕ: ${reason}`);
-                        }
-                        alert('Причина отправлена всем, кто в очереди');
-                    }
+                    let reason = prompt('⚠️ ВЫХОДИТЕ! Больше 3 минут. Причина задержки:');
+                    if(reason) for(let entry of queue) addCommentToUser(entry.userId, currentUserId, `🚨 ЗАДЕРЖКА: ${reason}`);
                 }
             }, 1000)
         };
-        addToHistory(currentUserId, 'начал(а) посещение', '');
+        addToHistory(currentUserId, 'начал посещение', '');
         render();
     }
     
     function finishSession() {
-        if(!currentSession || currentSession.userId !== currentUserId) {
-            alert('Нет активного сеанса посещения');
-            return;
-        }
-        
+        if(!currentSession || currentSession.userId !== currentUserId) { alert('Нет активного сеанса'); return; }
         clearInterval(currentSession.warnInterval);
-        let duration = Math.floor((Date.now() - currentSession.startTime) / 1000);
-        let durationStr = `${Math.floor(duration/60)} мин ${duration%60} сек`;
         currentSession = null;
-        
-        addToHistory(currentUserId, 'завершил(а) посещение', `длительность: ${durationStr}`);
+        addToHistory(currentUserId, 'завершил посещение', '');
         waitingForExitChecklist = true;
         render();
     }
     
     function renderExitChecklist() {
-        appRoot.innerHTML = `
-            <div class="modal" style="position:relative; display:flex;">
-                <div class="modal-card">
-                    <h2>🧾 ПОДТВЕРДИТЕ УБОРКУ</h2>
-                    <p>Перед выходом обязательно отметьте все пункты:</p>
-                    <div class="checklist">
-                        <label><input type="checkbox" id="check1"> ✅ я УБРАЛ за собой</label>
-                        <label><input type="checkbox" id="check2"> ✅ я СМЫЛ за собой</label>
-                        <label><input type="checkbox" id="check3"> ✅ после меня НЕ остался беспорядок</label>
-                        <label><input type="checkbox" id="check4"> ✅ туалетная бумага ещё осталась</label>
-                    </div>
-                    <button id="confirmExitBtn" class="success">Подтвердить выход</button>
-                </div>
-            </div>
-        `;
+        appRoot.innerHTML = `<div class="modal"><div class="modal-card"><h2>🧾 ПОДТВЕРДИТЕ УБОРКУ</h2>
+            <div class="checklist"><label><input type="checkbox" id="check1"> ✅ Я УБРАЛ за собой</label>
+            <label><input type="checkbox" id="check2"> ✅ Я СМЫЛ за собой</label>
+            <label><input type="checkbox" id="check3"> ✅ После меня НЕТ беспорядка</label>
+            <label><input type="checkbox" id="check4"> ✅ Туалетная бумага ЕСТЬ</label></div>
+            <button id="confirmExitBtn" class="success">ПОДТВЕРДИТЬ ВЫХОД</button></div></div>`;
         document.getElementById('confirmExitBtn').onclick = () => {
-            let c1 = document.getElementById('check1').checked;
-            let c2 = document.getElementById('check2').checked;
-            let c3 = document.getElementById('check3').checked;
-            let c4 = document.getElementById('check4').checked;
-            if(!c1 || !c2 || !c3 || !c4) {
-                alert('❗️ Необходимо поставить ВСЕ галочки!');
-                return;
+            if(!document.getElementById('check1').checked || !document.getElementById('check2').checked || !document.getElementById('check3').checked || !document.getElementById('check4').checked) {
+                alert('❌ Поставь ВСЕ галочки!'); return;
             }
-            
-            addToHistory(currentUserId, 'подтвердил(а) уборку', 'все галочки ✅');
+            addToHistory(currentUserId, 'подтвердил уборку', 'галочки');
             waitingForExitChecklist = false;
-            
-            if(pendingPreviousUserId && pendingPreviousUserId !== currentUserId) {
-                showRatingForPrevious(pendingPreviousUserId);
-            } else {
-                callNextInQueue();
-                render();
-            }
+            if(pendingPreviousUserId && pendingPreviousUserId !== currentUserId) showRatingForPrevious(pendingPreviousUserId);
+            else callNextInQueue();
+            render();
         };
     }
     
-    function showRatingForPrevious(previousUserId) {
-        let prevUser = findUserById(previousUserId);
-        if(!prevUser) {
-            callNextInQueue();
-            render();
-            return;
-        }
-        
+    function showRatingForPrevious(prevId) {
+        let prevUser = findUserById(prevId);
+        if(!prevUser) { callNextInQueue(); render(); return; }
         let modal = document.createElement('div'); modal.className = 'modal';
         let starsHtml = '';
-        for(let i=1; i<=5; i++) {
-            starsHtml += `<span class="stars" data-value="${i}">☆</span>`;
-        }
-        modal.innerHTML = `<div class="modal-card">
-            <h3>⭐ Оцените предыдущего посетителя</h3>
-            <p><b>${prevUser.name} ${prevUser.surname}</b> (ID: ${prevUser.id})</p>
+        for(let i=1;i<=5;i++) starsHtml += `<span class="stars" data-value="${i}">☆</span>`;
+        modal.innerHTML = `<div class="modal-card"><h3>⭐ ОЦЕНИ ПРЕДЫДУЩЕГО</h3>
+            <p><b>${prevUser.name} ${prevUser.surname}</b> | ID: ${prevUser.id}</p>
             <div id="ratingStars">${starsHtml}</div>
-            <textarea id="feedbackComment" placeholder="Ваши замечания (необязательно)"></textarea><br>
-            <button id="submitRating" class="success">Отправить оценку</button>
-            <button id="skipRating" class="warning">Пропустить</button>
-        </div>`;
+            <textarea id="feedbackComment" placeholder="Замечания (необязательно)"></textarea>
+            <button id="submitRating" class="success">ОТПРАВИТЬ</button>
+            <button id="skipRating">ПРОПУСТИТЬ</button></div>`;
         document.body.appendChild(modal);
-        
         let selectedStars = 0;
-        let starsElements = document.querySelectorAll('#ratingStars .stars');
-        function highlightStars(val) {
-            starsElements.forEach((s, idx) => { 
-                s.innerHTML = idx < val ? '★' : '☆'; 
-                s.style.color = idx < val ? '#ffb400' : '#ddd';
-            });
-        }
-        starsElements.forEach(star => {
-            star.onmouseover = function() { highlightStars(parseInt(this.dataset.value)); };
-            star.onclick = function() { selectedStars = parseInt(this.dataset.value); highlightStars(selectedStars); };
-        });
-        
+        let starsEl = document.querySelectorAll('#ratingStars .stars');
+        function highlight(val) { starsEl.forEach((s,i)=>{ s.innerHTML=i<val?'★':'☆'; s.style.color=i<val?'#ffb400':'#ddd'; }); }
+        starsEl.forEach(s=>{ s.onmouseover=()=>highlight(parseInt(s.dataset.value)); s.onclick=()=>{ selectedStars=parseInt(s.dataset.value); highlight(selectedStars); }; });
         document.getElementById('submitRating').onclick = () => {
-            if(selectedStars === 0) { alert('Поставьте оценку!'); return; }
+            if(!selectedStars) { alert('Поставь оценку'); return; }
             let comment = document.getElementById('feedbackComment').value;
-            allFeedbacks.push({
-                fromUserId: currentUserId,
-                targetUserId: previousUserId,
-                stars: selectedStars,
-                comment: comment,
-                createdAt: Date.now()
-            });
-            updateRating(previousUserId);
-            if(comment) addCommentToUser(previousUserId, currentUserId, `[ОТЗЫВ ПОСЛЕ ПОСЕЩЕНИЯ] Оценка ${selectedStars}⭐: ${comment}`);
-            else addCommentToUser(previousUserId, currentUserId, `[ОЦЕНКА ПОСЛЕ ПОСЕЩЕНИЯ] ${selectedStars}⭐`);
-            saveData();
+            allFeedbacks.push({ fromUserId: currentUserId, targetUserId: prevId, stars: selectedStars, comment, createdAt: Date.now() });
+            updateRating(prevId);
+            if(comment) addCommentToUser(prevId, currentUserId, `[ПОСЛЕ ПОСЕЩЕНИЯ] ${selectedStars}⭐: ${comment}`);
             modal.remove();
             callNextInQueue();
             render();
         };
-        document.getElementById('skipRating').onclick = () => {
-            modal.remove();
-            callNextInQueue();
-            render();
-        };
+        document.getElementById('skipRating').onclick = () => { modal.remove(); callNextInQueue(); render(); };
     }
     
     function callNextInQueue() {
         if(queue.length > 0) {
             let next = queue[0];
             let nextUser = findUserById(next.userId);
-            if(nextUser) {
-                addCommentToUser(next.userId, 111111, `🔔 Теперь Ваша очередь! Можете заходить. Нажмите "Начать посещение".`, true);
-                alert(`📢 Приглашён следующий: ${nextUser.name} ${nextUser.surname}`);
-            }
+            if(nextUser) addCommentToUser(next.userId, 111111, `🔔 ТВОЯ ОЧЕРЕДЬ! Жми «Начать посещение».`, true);
         }
         render();
     }
     
     function renderActiveSession() {
         let elapsed = Math.floor((Date.now() - currentSession.startTime) / 1000);
-        let mins = Math.floor(elapsed/60);
-        let secs = elapsed%60;
-        let warning = (elapsed > 180) ? '<div style="color:red; font-weight:bold; margin:10px 0;">⚠️ Вы превысили 3 минуты! Пожалуйста, завершайте.</div>' : '';
-        return `<div class="queue-card"><h3>🚽 ВЫ СЕЙЧАС В ТУАЛЕТЕ</h3>
-        <p>⏱️ Время посещения: ${mins}:${secs.toString().padStart(2,'0')}</p>
-        ${warning}
-        <button id="endNowBtn" class="success" style="background:#27ae60;">✅ Закончить посещение</button></div>`;
+        let mins = Math.floor(elapsed/60), secs = elapsed%60;
+        return `<div class="queue-card"><h3>🚽 ВЫ В ТУАЛЕТЕ</h3>
+        <p>⏱️ ${mins}:${secs.toString().padStart(2,'0')}</p>
+        ${elapsed>180?'<div style="color:red;font-weight:bold;">⚠️ УЖЕ БОЛЬШЕ 3 МИНУТ! ВЫХОДИ.</div>':''}
+        <button id="endNowBtn" class="success">✅ ЗАКОНЧИТЬ</button></div>`;
     }
     
     function showReportForm() {
         let modal = document.createElement('div'); modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-card"><h3>📢 Сообщить об ошибке / Жалоба</h3>
-        <input id="targetIdReport" placeholder="ID пользователя, на кого жалуетесь (6 цифр)" type="number"><br>
-        <textarea id="complaintText" rows="3" placeholder="Опишите ошибку или жалобу"></textarea><br>
-        <button id="sendComplaint">Отправить админу</button> <button id="cancelComplaint">Отмена</button></div>`;
+        modal.innerHTML = `<div class="modal-card"><h3>📢 ЖАЛОБА / ОШИБКА</h3>
+        <input id="targetIdReport" placeholder="ID того, на кого жалуешься"><br>
+        <textarea id="complaintText" rows="3" placeholder="Что случилось?"></textarea>
+        <button id="sendComplaint">ОТПРАВИТЬ АДМИНУ</button> <button id="cancelComplaint">ОТМЕНА</button></div>`;
         document.body.appendChild(modal);
         document.getElementById('sendComplaint').onclick = () => {
             let targetId = parseInt(document.getElementById('targetIdReport').value);
             let text = document.getElementById('complaintText').value.trim();
-            if(!targetId || !text) { alert('Введите ID и текст'); return; }
-            let targetUser = findUserById(targetId);
-            if(!targetUser) { alert('Пользователь не найден'); return; }
-            let userFrom = findUserById(currentUserId);
-            if(userFrom.canComplainUntil && userFrom.canComplainUntil > Date.now()) { 
-                alert('Вам запрещено писать жалобы до ' + new Date(userFrom.canComplainUntil).toLocaleString()); 
-                modal.remove(); 
-                return; 
-            }
-            complaints.push({ 
-                id: Date.now(), 
-                fromUserId: currentUserId, 
-                targetUserId: targetId, 
-                text: text, 
-                adminAnswer: null, 
-                createdAt: Date.now(), 
-                isArchived: false, 
-                appealText: null 
-            });
+            if(!targetId || !text) { alert('Заполни всё'); return; }
+            if(!findUserById(targetId)) { alert('Пользователь не найден'); return; }
+            let fromUser = findUserById(currentUserId);
+            if(fromUser.canComplainUntil && fromUser.canComplainUntil > Date.now()) { alert('Тебе запрещено писать жалобы'); modal.remove(); return; }
+            complaints.push({ id: Date.now(), fromUserId: currentUserId, targetUserId: targetId, text, adminAnswer: null, createdAt: Date.now(), isArchived: false, appealText: null });
             saveData();
-            alert('Жалоба отправлена администратору');
+            alert('Жалоба ушла админу');
             modal.remove();
         };
         document.getElementById('cancelComplaint').onclick = () => modal.remove();
@@ -632,162 +526,83 @@
     
     function showProfile(user) {
         let myComplaints = complaints.filter(c => c.fromUserId === currentUserId);
-        let complaintsHtml = myComplaints.length ? myComplaints.map(c => {
+        let complaintsHtml = myComplaints.map(c => {
             let target = findUserById(c.targetUserId);
             let targetName = target ? `${target.name} ${target.surname}` : `ID ${c.targetUserId}`;
             return `<div style="border-bottom:1px solid #ccc; margin:10px 0; padding:5px;">
-                <b>📌 Жалоба на ${targetName}</b><br>
-                📄 ${c.text}<br>
-                ✍️ <b>Ответ админа:</b> ${c.adminAnswer || '<i>нет ответа</i>'}<br>
-                ${c.adminAnswer ? `<button class="small" onclick="appealComplaint(${c.id})">📢 Подать апелляцию</button>` : ''}
-                <small>${new Date(c.createdAt).toLocaleString()}</small>
-            </div>`;
-        }).join('') : '<p>Нет жалоб</p>';
-        
+                <b>📌 Жалоба на ${targetName}</b><br>📄 ${c.text}<br>✍️ Ответ: ${c.adminAnswer || 'нет'}<br>
+                ${c.adminAnswer ? `<button class="small" onclick="appealComplaint(${c.id})">📢 АПЕЛЛЯЦИЯ</button>` : ''}
+                <small>${new Date(c.createdAt).toLocaleString()}</small></div>`;
+        }).join('');
         let ratingsInfo = allFeedbacks.filter(f => f.targetUserId === currentUserId);
-        let avgRating = ratingsInfo.length ? (ratingsInfo.reduce((s,f)=>s+f.stars,0)/ratingsInfo.length).toFixed(2) : 'нет оценок';
-        
-        let historyHtml = user.history.slice(0, 15).map(h => `<li><b>${new Date(h.timestamp).toLocaleString()}</b>: ${h.action} — ${h.details || ''}</li>`).join('');
-        
+        let avgRating = ratingsInfo.length ? (ratingsInfo.reduce((s,f)=>s+f.stars,0)/ratingsInfo.length).toFixed(2) : 'нет';
+        let historyHtml = user.history.slice(0,15).map(h => `<li>${new Date(h.timestamp).toLocaleString()}: ${h.action} — ${h.details}</li>`).join('');
         document.getElementById('dynamicArea').innerHTML = `
             <div class="queue-card"><h3>👤 МОЙ ПРОФИЛЬ</h3>
             <p><b>ФИО:</b> ${user.name} ${user.surname} ${user.patronymic}</p>
-            <p><b>ID:</b> ${user.id}</p>
-            <p><b>⭐ Рейтинг:</b> ${user.rating} (${ratingsInfo.length} оценок, средняя ${avgRating})</p>
-            <button id="changeDataBtn">✏️ Изменить данные</button>
-            <hr><h4>📜 История посещений (последние 15)</h4><ul style="max-height:200px; overflow-y:auto;">${historyHtml || 'Нет истории'}</ul>
-            <hr><h4>📨 Мои жалобы и ответы</h4>${complaintsHtml}</div>
-        `;
+            <p><b>🆔 ID:</b> <span style="font-size:28px; font-weight:bold; background:#2c3e66; color:white; padding:5px 20px; border-radius:60px;">${user.id}</span></p>
+            <p><b>⭐ РЕЙТИНГ:</b> <span style="font-size:22px; font-weight:bold;">${user.rating}</span> (${ratingsInfo.length} оценок, средняя ${avgRating})</p>
+            <button id="changeDataBtn">✏️ ИЗМЕНИТЬ ДАННЫЕ</button>
+            <hr><h4>📜 ИСТОРИЯ (15 последних)</h4><ul>${historyHtml || 'Нет истории'}</ul>
+            <hr><h4>📨 МОИ ЖАЛОБЫ</h4>${complaintsHtml || 'Нет жалоб'}</div>`;
         document.getElementById('changeDataBtn')?.addEventListener('click', () => {
-            let newName = prompt('Новое имя', user.name);
-            if(newName) user.name = newName;
-            let newSurname = prompt('Новая фамилия', user.surname);
-            if(newSurname) user.surname = newSurname;
-            let newPatr = prompt('Новое отчество', user.patronymic);
-            if(newPatr) user.patronymic = newPatr;
-            saveData();
-            render();
+            let newName = prompt('Новое имя', user.name); if(newName) user.name = newName;
+            let newSurname = prompt('Новая фамилия', user.surname); if(newSurname) user.surname = newSurname;
+            let newPatr = prompt('Новое отчество', user.patronymic); if(newPatr) user.patronymic = newPatr;
+            saveData(); render();
         });
     }
     
-    window.appealComplaint = (complaintId) => {
-        let complaint = complaints.find(c => c.id === complaintId);
-        if(!complaint) return;
-        let appeal = prompt('Напишите причину апелляции:');
-        if(appeal && appeal.trim()) { 
-            complaint.appealText = appeal; 
-            saveData(); 
-            alert('✅ Апелляция отправлена администратору'); 
-            render(); 
-        }
+    window.appealComplaint = (cid) => {
+        let c = complaints.find(c => c.id === cid);
+        if(!c) return;
+        let appeal = prompt('Причина апелляции:');
+        if(appeal) { c.appealText = appeal; saveData(); alert('Апелляция отправлена'); render(); }
     };
     
     function showAdminPanel() {
-        let activeComplaints = complaints.filter(c => !c.isArchived);
+        let active = complaints.filter(c => !c.isArchived);
         let html = `<div class="admin-panel"><h3>⚙️ АДМИН ПАНЕЛЬ</h3>`;
-        
-        if(activeComplaints.length === 0) {
-            html += `<p>Нет активных жалоб</p>`;
-        } else {
-            activeComplaints.forEach(c => {
-                let fromUser = findUserById(c.fromUserId);
-                let toUser = findUserById(c.targetUserId);
-                html += `<div style="border:1px solid #aaa; margin:10px; padding:10px; border-radius:16px;">
-                    <b>Жалоба #${c.id}</b><br>
-                    📤 От: ${fromUser?.name} ${fromUser?.surname} (ID ${c.fromUserId})<br>
-                    📥 На: ${toUser?.name} ${toUser?.surname} (ID ${c.targetUserId})<br>
-                    📝 Текст: "${c.text}"<br>
-                    ${c.appealText ? `<b>📢 АПЕЛЛЯЦИЯ:</b> "${c.appealText}"<br>` : ''}
-                    <b>✍️ Ответ админа:</b> ${c.adminAnswer || '—'}<br>
-                    <input type="text" id="answerInput_${c.id}" placeholder="Ответ на жалобу" style="width:60%;"><button onclick="answerComplaint(${c.id})">Ответить</button><br>
-                    <button onclick="banUser(${c.targetUserId})" class="danger">🔨 Забанить пользователя</button>
-                    <button onclick="restrictComplaints(${c.fromUserId})" class="warning">🚫 Запретить жалобы</button>
-                    <button onclick="deleteComplaint(${c.id})">🗑️ Удалить жалобу</button>
-                </div>`;
-            });
-        }
-        
-        html += `<hr><h4>👥 Все пользователи</h4>`;
-        users.forEach(u => {
-            html += `<div style="font-size:12px; margin:5px;">${u.name} ${u.surname} (ID ${u.id}) | ⭐${u.rating} | ${u.bannedUntil && u.bannedUntil > Date.now() ? '🔴 ЗАБАНЕН' : '🟢 Активен'}</div>`;
+        active.forEach(c => {
+            let from = findUserById(c.fromUserId);
+            let to = findUserById(c.targetUserId);
+            html += `<div style="border:1px solid #aaa; margin:10px; padding:10px;">
+                <b>Жалоба #${c.id}</b><br>От: ${from?.name} (ID ${c.fromUserId})<br>На: ${to?.name} (ID ${c.targetUserId})<br>Текст: "${c.text}"<br>
+                ${c.appealText ? `<b>АПЕЛЛЯЦИЯ:</b> ${c.appealText}<br>` : ''}
+                <input id="ans_${c.id}" placeholder="Ответ"><button onclick="answerComplaint(${c.id})">Ответить</button>
+                <button onclick="banUser(${c.targetUserId})">🔨 БАН</button>
+                <button onclick="restrictComplaints(${c.fromUserId})">🚫 ЗАПРЕТ ЖАЛОБ</button>
+                <button onclick="deleteComplaint(${c.id})">🗑️ УДАЛИТЬ</button>
+            </div>`;
         });
-        
-        html += `<br><button id="closeAdmin">Закрыть</button></div>`;
+        html += `<hr><h4>Все пользователи</h4>`;
+        users.forEach(u => { html += `<div>${u.name} ${u.surname} | ID ${u.id} | ⭐${u.rating} | ${u.bannedUntil && u.bannedUntil>Date.now() ? 'ЗАБАНЕН' : 'Активен'}</div>`; });
+        html += `<br><button id="closeAdmin">ЗАКРЫТЬ</button></div>`;
         document.getElementById('dynamicArea').innerHTML = html;
         document.getElementById('closeAdmin')?.addEventListener('click', () => render());
     }
     
     window.answerComplaint = (cid) => {
-        let answer = document.getElementById(`answerInput_${cid}`)?.value;
-        if(!answer) return alert('Введите ответ');
+        let ans = document.getElementById(`ans_${cid}`)?.value;
+        if(!ans) return;
         let c = complaints.find(c => c.id === cid);
-        if(c) { 
-            c.adminAnswer = answer; 
-            saveData(); 
-            alert('Ответ сохранён'); 
-            showAdminPanel(); 
-        }
+        if(c) { c.adminAnswer = ans; saveData(); showAdminPanel(); }
     };
-    
     window.banUser = (uid) => {
-        let duration = prompt('На сколько? (примеры: 10 минут, 2 часа, 3 дня, 1 месяц, навсегда)');
-        if(!duration) return;
-        let ms = 0;
-        if(duration.includes('навсегда')) ms = 315360000000;
-        else {
-            let num = parseInt(duration);
-            if(isNaN(num)) { alert('Введите число'); return; }
-            if(duration.includes('минут')) ms = num * 60 * 1000;
-            else if(duration.includes('час')) ms = num * 3600000;
-            else if(duration.includes('день')) ms = num * 86400000;
-            else if(duration.includes('месяц')) ms = num * 2592000000;
-            else { alert('Непонятная единица'); return; }
-        }
-        let user = findUserById(uid);
-        if(user) { 
-            user.bannedUntil = Date.now() + ms; 
-            saveData(); 
-            alert(`${user.name} ${user.surname} забанен`);
-            if(currentSession && currentSession.userId === uid) {
-                clearInterval(currentSession.warnInterval);
-                currentSession = null;
-                callNextInQueue();
-            }
-            showAdminPanel(); 
-        }
+        let dur = prompt('На сколько? (10 минут, 2 часа, 3 дня, навсегда)');
+        if(!dur) return;
+        let ms = dur.includes('навсегда') ? 315360000000 : (()=>{ let n=parseInt(dur); if(dur.includes('минут')) return n*60000; if(dur.includes('час')) return n*3600000; if(dur.includes('день')) return n*86400000; if(dur.includes('месяц')) return n*2592000000; return 86400000; })();
+        let u = findUserById(uid);
+        if(u) { u.bannedUntil = Date.now()+ms; saveData(); alert('Забанен'); showAdminPanel(); if(currentSession?.userId===uid){ clearInterval(currentSession.warnInterval); currentSession=null; callNextInQueue(); } }
     };
-    
     window.restrictComplaints = (uid) => {
-        let duration = prompt('Запретить жалобы на сколько? (пример: 3 дня, 12 часов)');
-        if(!duration) return;
-        let ms = 0;
-        let num = parseInt(duration);
-        if(isNaN(num)) { alert('Введите число'); return; }
-        if(duration.includes('час')) ms = num * 3600000;
-        else if(duration.includes('день')) ms = num * 86400000;
-        else ms = 86400000;
-        let user = findUserById(uid);
-        if(user) { 
-            user.canComplainUntil = Date.now() + ms; 
-            saveData(); 
-            alert(`Пользователь ${user.name} не сможет писать жалобы`); 
-            showAdminPanel(); 
-        }
+        let days = parseInt(prompt('На сколько дней запретить жалобы?')) || 1;
+        let u = findUserById(uid);
+        if(u) { u.canComplainUntil = Date.now()+days*86400000; saveData(); alert('Жалобы запрещены'); showAdminPanel(); }
     };
+    window.deleteComplaint = (cid) => { if(confirm('Удалить жалобу?')) { complaints=complaints.filter(c=>c.id!==cid); saveData(); showAdminPanel(); } };
     
-    window.deleteComplaint = (cid) => {
-        if(confirm('Удалить жалобу?')) {
-            complaints = complaints.filter(c => c.id !== cid);
-            saveData();
-            showAdminPanel();
-        }
-    };
-    
-    document.addEventListener('click', (e) => {
-        if(e.target.id === 'endNowBtn') {
-            finishSession();
-        }
-    });
+    document.addEventListener('click', (e) => { if(e.target.id === 'endNowBtn') finishSession(); });
     
     loadData();
     render();
